@@ -1,3 +1,4 @@
 useDynLib(skm)
+import(methods, Rcpp)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")

@@ -9,9 +9,9 @@ License: MIT + file LICENSE
 LazyData: TRUE
 Depends:
     data.table,
-    magrittr
+    magrittr, Rcpp, RcppArmadillo
 URL: http://github.com/gyang274/skm
 BugReports: http://github.com/gyang274/skm/issues
 RoxygenNote: 5.0.1
-Imports: Rcpp, RcppArmadillo
+Imports: methods, Rcpp (>= 0.12.5), RcppArmadillo
 LinkingTo: Rcpp, RcppArmadillo
