@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{col_min_idx}
 \alias{col_min_idx}
-\title{col_min_idx: colvec min value index}
+\title{col_min_idx: colvec min value index within limited range}
 \usage{
 col_min_idx(u, wlmt)
 }
@@ -13,7 +13,7 @@ col_min_idx(u, wlmt)
 return an index of min value w.r.t to original index
 }
 \description{
-col_min_idx: colvec min value index
+col_min_idx: colvec min value index within limited range
 }
 \note{
 cpp use index start from 0 vs r use index start from 1

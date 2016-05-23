@@ -39,24 +39,3 @@ rgn_vec <- function(s, z = 0L) {
     .Call('skm_rgn_vec', PACKAGE = 'skm', s, z)
 }
 
-#' skm_minmax_cpp: skm via min-max on in cpp.
-#' skm_minmax_cpp with an input m x n matrix: objective is to select n of m st
-#' minimize sum(min(<i, j> where i <1..n> and j <1..n> each use <1..n> once)).
-#' so in case m <= n it simply select all m - should always be apply on matrix
-#' with m > n - it is designed as a expectation step in skm_cpp on updating s.
-#' it select i in <1..m> such that i has the colwise_min_idx on column j where
-#' j has max difference of (colwise_max_val - colwise_min_val), it then remove
-#' row i col j from matrix and repeat.
-#' example skm_minmax_cpp is superior in bouding worst case compare to greedy:
-#' x = [1 100; 4 200; 2 400; 9 900]: greedy 1 then 200, min-max 100 then 2, so
-#' greedy give [1 100; 4 200] with 201 and minmax give [1 100; 2 400] with 102
-NULL
-
-skm_minmax_cpp <- function(x, s_must) {
-    .Call('skm_skm_minmax_cpp', PACKAGE = 'skm', x, s_must)
-}
-
-skm_cpp <- function(x, s_init, s_must, max_it = 2L) {
-    .Call('skm_skm_cpp', PACKAGE = 'skm', x, s_init, s_must, max_it)
-}
-

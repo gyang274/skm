@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{col_max_idx}
 \alias{col_max_idx}
-\title{col_max_idx: colvec max value index}
+\title{col_max_idx: colvec max value index within limited range}
 \usage{
 col_max_idx(u, wlmt)
 }
@@ -13,6 +13,11 @@ col_max_idx(u, wlmt)
 return an index of max value w.r.t to original index
 }
 \description{
-col_max_idx: colvec max value index
+col_max_idx: colvec max value index within limited range
+}
+\note{
+cpp use index start from 0 vs r use index start from 1
+
+in case of equal std:min/std:max take first index seen
 }
 

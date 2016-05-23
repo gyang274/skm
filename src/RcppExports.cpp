@@ -78,25 +78,3 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// skm_minmax_cpp
-arma::uvec skm_minmax_cpp(arma::mat x);
-RcppExport SEXP skm_skm_minmax_cpp(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
-    __result = Rcpp::wrap(skm_minmax_cpp(x));
-    return __result;
-END_RCPP
-}
-// skm_cpp
-int skm_cpp(NumericMatrix x);
-RcppExport SEXP skm_skm_cpp(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    __result = Rcpp::wrap(skm_cpp(x));
-    return __result;
-END_RCPP
-}
