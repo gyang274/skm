@@ -148,9 +148,9 @@ skmSolution skm::skm_minmax_cpp(const arma::mat x, const arma::uvec s_must) {
 
 // workaourd? call function with argu v = ucolvec() and test with v.size() == 0
 
-// skm::skm_cpp: solve skm via selective k-means.
+// skm::skm_sgl_cpp: solve skm via selective k-means - one single run.
 // member function of class skm: w. mat x, uvec s_init, uvec s_must, int max_it
-skmSolution skm::skm_cpp(arma::uvec s_init, arma::uvec s_must, arma::uword max_it) {
+skmSolution skm::skm_sgl_cpp(arma::uvec s_must, arma::uvec s_init, arma::uword max_it) {
 
   arma::uvec s(s_init.begin(), s_init.size());
 
@@ -230,8 +230,11 @@ skmSolution skm::skm_cpp(arma::uvec s_init, arma::uvec s_must, arma::uword max_i
   return skmSolution(s, t, o);
 }
 
-// skm::skm_mlp: wrapper over skm_cpp - multiple runs and return best of all
-skmSolution skm::skm_mlp(arma::uvec s_init, arma::uvec s_must, arma::uword max_it, arma::uword max_at) {
+
+// <http://rcppcore.github.io/RcppParallel/> - skm::skm_mlp_cpp run in parallel
+// skm::skm_mlp_cpp: wrap skm_sgl_cpp with multiple runs and return best of all
+skmSolution skm::skm_mlp_cpp(arma::uvec s_must, arma::uword k, arma::uword max_at,
+                             arma::uword ) {
 
   arma::uvec s(2);
 

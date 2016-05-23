@@ -32,9 +32,9 @@ public:
 
   arma::mat x;
 
-  skmSolution skm_cpp(arma::uvec s_init, arma::uvec s_must, arma::uword max_it);
+  skmSolution skm_sgl_cpp(arma::uvec s_must, arma::uvec s_init, arma::uword max_it);
 
-  skmSolution skm_mlp(arma::uvec s_init, arma::uvec s_must, arma::uword max_it, arma::uword max_at);
+  skmSolution skm_mlp_cpp();
 
 private:
 
@@ -70,9 +70,9 @@ RCPP_MODULE(skm_module) {
 
     .field("x", &skm::x)
 
-    .method("skm_cpp", &skm::skm_cpp)
+    .method("skm_sgl_cpp", &skm::skm_sgl_cpp)
 
-    .method("skm_mlp", &skm::skm_mlp)
+    .method("skm_mlp_cpp", &skm::skm_mlp_cpp)
     ;
 
   class_<skmSolution>( "skmSolution" )
