@@ -78,3 +78,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// skm_mlp_cpp
+List skm_mlp_cpp(const NumericMatrix x, int k, IntegerVector s_must, int max_it, int max_at);
+RcppExport SEXP skm_skm_mlp_cpp(SEXP xSEXP, SEXP kSEXP, SEXP s_mustSEXP, SEXP max_itSEXP, SEXP max_atSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type s_must(s_mustSEXP);
+    Rcpp::traits::input_parameter< int >::type max_it(max_itSEXP);
+    Rcpp::traits::input_parameter< int >::type max_at(max_atSEXP);
+    __result = Rcpp::wrap(skm_mlp_cpp(x, k, s_must, max_it, max_at));
+    return __result;
+END_RCPP
+}

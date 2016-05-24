@@ -39,3 +39,7 @@ rgn_vec <- function(s, z = 0L) {
     .Call('skm_rgn_vec', PACKAGE = 'skm', s, z)
 }
 
+skm_mlp_cpp <- function(x, k, s_must, max_it, max_at) {
+    .Call('skm_skm_mlp_cpp', PACKAGE = 'skm', x, k, s_must, max_it, max_at)
+}
+

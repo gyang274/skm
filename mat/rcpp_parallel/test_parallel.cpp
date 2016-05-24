@@ -1,6 +1,8 @@
-#include <Rcpp.h>
-// [[Rcpp::depends(RcppParallel)]]
+// [[Rcpp::depends(RcppParallel, RcppArmadillo)]]
+#include <RcppArmadillo.h>
+#include <RcppArmadilloExtensions/sample.h>
 #include <RcppParallel.h>
+
 
 using namespace std;
 using namespace Rcpp;
@@ -16,7 +18,7 @@ struct MyThing : public Worker {
     
     for(int j = begin; j < end; j++) {      
       _pc[j] = 1;
-      //      _pcsd[j] = 1;
+      _pcsd[j] = 1;
     }
   }    
 };
@@ -30,5 +32,15 @@ void calculateMyThingParallel() {
   MyThing mt(_pc, _pcsd);
   
   parallelFor(0, 100, mt);
+}
+
+// [[Rcpp::export]]
+NumericVector csample_num( NumericVector x,
+                           int size,
+                           bool replace,
+                           NumericVector prob = NumericVector::create()
+) {
+  NumericVector ret = RcppArmadillo::sample(x, size, replace, prob);
+  return ret;
 }
 

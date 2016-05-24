@@ -13,19 +13,22 @@ loadModule("skm_module", TRUE)
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
+#------------------------------- sets r-options -------------------------------#
+#------------------------------------------------------------------------------#
+# RcppParallel: default use all threads
+# setThreadOptions(numThreads = defaultNumThreads() / 2)
+#------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
 #------------------------------------ main ------------------------------------#
 #------------------------------------------------------------------------------#
 
-# skm_mlp: skm with multiple runs parallel
-# skm_mlp <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
-#                     max_it = 10L, s_init = NULL, n_init = 10L,
-#                     min_at = 10L, max_at = 50L, halt_at = 20L) {
-#
-#
-# }
+# skm_mlp_cpp: solve skm with multiple runs in parallel via RcppParallel
+# skm_mlp_cpp(const NumericMatrix x, arma::uword k, arma::uvec s_must,
+#             arma::uword max_it, arma::uword max_at)
 
-#' skm: selective k-means
-#' selective kmeans solve the following problem:
+#' skm_mlp: selective k-means with multiple runs in parallel
+#' a selective kmeans solve the following problem w. parallel processing:
 #' assume a data.table of s - t - d(s, t) for all combinations of s and t,
 #' choose k of s that minimizes sum(min(d(s, t))) with k such s and all t.
 #' @param x: data.table with s - t - d(s, t): s<source> - t<target> - d<dist>,
@@ -44,16 +47,19 @@ loadModule("skm_module", TRUE)
 #' objective to minimize d = d * w such as weighted cost of assigning t into s
 #' @param s_must: length <= k-1 s must in result: conditional optimizing.
 #' @param s_init: initialize optimization with s_init<must have length k>
-#' if both s_must s_init none null then all(s_must %in% s_init) must be TRUE.
 #' @param max_it: max number of iterations can run for optimizing result.
+#' @param max_at: max number of attempts/repeats on running for optimial.
+#' TODO: add min_at: min number of attempts/repeats on running for optimial,
+#' also add halt_at: number attempts before stop if no improve after min_at.
 #' @return list(s, t):
 #' s - data.table with s<source> - k<0, 1..k> when 0 it not as being selected
 #' when 1 - k it is selected as the <ik>th center - ik as value i in column k
 #' t - data.table with t<target> - k<1..k> where k is assigning of t to <ik>s
 #' @useDynLib skm
 #' @importFrom Rcpp sourceCpp
-skm <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
-                w_colname = NULL, s_must = NULL, s_init = NULL, max_it = 10L) {
+skm_mlp <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
+                    w_colname = NULL, s_must = integer(0L), s_init = integer(0L),
+                    max_it = 100L, max_at = 100L) {
 
   # x must be data.table
   if ( ! all( class(x) == c("data.table", "data.frame") ) ) { warning("skm: x should be a data.table.\n") }
@@ -81,19 +87,12 @@ skm <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
 
   xmt_t_name <- names(xdt)
 
-  xmt <- as.matrix(xdt) %>%
-    `attr<-`("s_name", xmt_s_name) %>%
-    `attr<-`("t_name", xmt_t_name)
+  xmt <- as.matrix(xdt)
 
+  # apply skm_mlp_cpp to retrive solutions
+  skm_lst <- skm_mlp_cpp(x = xmt, k = k, s_must = s_must, max_it = max_it, max_at = max_at)
 
-s_init = c("53403", "53405")
-
-
-
-
-  .skm_cpp
-
-
+  return(skm_lst);
 }
 
 
@@ -128,7 +127,7 @@ dist_wlatlng <- function(.lat1, .lng1, .lat2, .lng2, .measure = "mi") {
 #------------------------------------------------------------------------------#
 #------------------------------------ init ------------------------------------#
 #------------------------------------------------------------------------------#
-#' `%+%` - concatenate strings
+# `%+%` - concatenate strings
 `%+%` <- function(stringX, stringY) { return( paste0(stringX, stringY) ) }
 #------------------------------------------------------------------------------#
 

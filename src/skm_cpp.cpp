@@ -2,7 +2,9 @@
 #include "matrix_minmax.h"
 
 #include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadilloExtensions/sample.h>
+#include <RcppParallel.h>
+// [[Rcpp::depends(RcppParallel, RcppArmadillo)]]
 
 
 // http://stackoverflow.com/questions/21944695/rcpparmadillo-and-arma-namespace
@@ -22,6 +24,7 @@
 
 using namespace Rcpp;
 // using namespace arma;
+using namespace RcppParallel;
 
 
 // skm::skm_minmax_cpp: skm via min-max on in cpp - subroutine of skm::skm_cpp
@@ -36,6 +39,9 @@ using namespace Rcpp;
 // x = [1 100; 4 200; 2 400; 9 900]: greedy 1 then 200, min-max 100 then 2, so
 // greedy give [1 100; 4 200] with 201 and minmax give [1 100; 2 400] with 102
 skmSolution skm::skm_minmax_cpp(const arma::mat x, const arma::uvec s_must) {
+
+  // Rcout << "skm_minmax_cpp - check input x: " << std::endl << x << std::endl;
+  // Rcout << "skm_minmax_cpp - check input s_must: " << s_must.t() << std::endl;
 
   if (x.n_rows < x.n_cols) { stop("x must a matrix m x n with m >= n.\n"); }
 
@@ -66,27 +72,32 @@ skmSolution skm::skm_minmax_cpp(const arma::mat x, const arma::uvec s_must) {
       // vlmt should remove the one with highest benefit w.r.t max-min.
 
       // more thoughts: even if s_must does not happend to select a row
-      // contain one or more min_val, we should remove some one col wrt
-      // benenfit max - val(on row s) because we don't want then select
+      // contains one or more min_val, we should remove some one column
+      // loss of val(on row s) - min because we don't want then selects
       // another row s2 that is very close to s - e.g. s has 2nd min on
       // col t but s2 has 1st min on col t is then select - a real case
       // example would be we have two group from t, says, East and West
       // we put NJ 2nd best among East in s_must and then select NY 1st
       // instead we should remove East from consideration and select CA
+      // when remove col w.r.t lowest val(on row s) - min, it mean that
+      // on this column or group, s is closest and replaces best option
 
       // Rcout << "push s_must into s: " << s_must(i_init) << std::endl;
 
       // arma::uvec v_min_idx = arma::zeros<arma::uvec>(x.n_cols);
 
-      arma::vec v_bnt_val = arma::zeros<arma::vec>(x.n_cols);
+      // calculate colwise val(on row s) - min: what are the cost of enforcing s
+      arma::vec v_cns_val = arma::zeros<arma::vec>(x.n_cols);
 
       for (arma::uvec::iterator jt = vlmt.begin(); jt != vlmt.end(); jt++) {
 
-        v_bnt_val(*jt) = col_max_val(x.col(*jt), ulmt) - x(s(i_init), *jt);
+        v_cns_val(*jt) = x(s(i_init), *jt) - col_min_val(x.col(*jt), ulmt);
 
       }
 
-      vlmt = vlmt(find(vlmt != col_max_idx(v_bnt_val, vlmt)));
+      // TODO: add when row s contains more than one columns achieves:
+      // col_min_val(v_cns_val, vlmt) select the one with max(max-min)
+      vlmt = vlmt(find(vlmt != col_min_idx(v_cns_val, vlmt)));
 
       ulmt = ulmt(find(ulmt != s(i_init)));
 
@@ -141,6 +152,7 @@ skmSolution skm::skm_minmax_cpp(const arma::mat x, const arma::uvec s_must) {
   return skmSolution(s, t, o);
 }
 
+
 // Rcpp attributes code that parses function declarations isn't able to parsing
 // all syntactic forms of C++ but rather a subset. The default argument parsing
 // is able to handle scalars, strings, and simple vector initializations but no
@@ -148,9 +160,14 @@ skmSolution skm::skm_minmax_cpp(const arma::mat x, const arma::uvec s_must) {
 
 // workaourd? call function with argu v = ucolvec() and test with v.size() == 0
 
-// skm::skm_sgl_cpp: solve skm via selective k-means - one single run.
+// skm::skm_sgl_cpp: solve skm with single and a fixed given s_init
 // member function of class skm: w. mat x, uvec s_init, uvec s_must, int max_it
-skmSolution skm::skm_sgl_cpp(arma::uvec s_must, arma::uvec s_init, arma::uword max_it) {
+skmSolution skm::skm_sgl_cpp(arma::uvec s_init, arma::uvec s_must, arma::uword max_it) {
+
+  // Rcout << "skm_sgl_cpp - check input x: " << std::endl << x << std::endl;
+  // Rcout << "skm_sgl_cpp - check input s_init: " << s_init.t() << std::endl;
+  // Rcout << "skm_sgl_cpp - check input s_must: " << s_must.t() << std::endl;
+  // Rcout << "skm_sgl_cpp - check input max_it: " << max_it << std::endl;
 
   arma::uvec s(s_init.begin(), s_init.size());
 
@@ -231,16 +248,129 @@ skmSolution skm::skm_sgl_cpp(arma::uvec s_must, arma::uvec s_init, arma::uword m
 }
 
 
-// <http://rcppcore.github.io/RcppParallel/> - skm::skm_mlp_cpp run in parallel
-// skm::skm_mlp_cpp: wrap skm_sgl_cpp with multiple runs and return best of all
-skmSolution skm::skm_mlp_cpp(arma::uvec s_must, arma::uword k, arma::uword max_at,
-                             arma::uword ) {
+// skm::skm_rgi_cpp: solve skm with single and random size k s_init
+// member function of class skm: w. mat x, uword k, uvec s_must, int max_it
+skmSolution skm::skm_rgi_cpp(arma::uword k, arma::uvec s_must, arma::uword max_it) {
 
-  arma::uvec s(2);
+  // create s_init w s_must and k
+  arma::uvec ulmt = arma::cumsum(arma::ones<arma::uvec>(x.n_rows)) - 1;
 
-  arma::uvec t(1);
+  if ( s_must.size() > 0 ) {
 
-  double o = 99.87;
+    if ( s_must.size() < k ) {
 
-  return skmSolution(s, t, o);
+      for (arma::uword i = 0; i < s_must.size(); i++) {
+
+        ulmt = ulmt(find(ulmt != s_must(i)));
+
+      }
+
+    } else {
+
+      stop("skm_rgi_cpp: s_must must have length < k");
+
+    }
+
+  }
+
+  arma::uvec s_init = arma::join_cols(s_must, as<arma::uvec>(RcppArmadillo::sample(as<IntegerVector>(wrap(ulmt)), as<int>(wrap(k - s_must.size())), false)));
+
+  // Rcout << "skm_rgi_cpp - construct s_init: " << s_init.t() << std::endl;
+
+  return skm::skm_sgl_cpp(s_init, s_must, max_it);
+
+}
+
+
+// skm::skm_rgi_rpl: a wrapper around skm::skm_rgi_cpp for calling from skmRpl class
+void skm::skm_rgi_rpl(RcppParallel::RVector<int>::const_iterator arg_begin,
+                      RcppParallel::RVector<int>::const_iterator arg_end,
+                      RcppParallel::RMatrix<double>::Row::iterator os_begin) {
+
+  // construct argument list for calling skm::skm_rgi_cpp
+  RVector<int>::const_iterator it1 = arg_begin;
+
+  RMatrix<double>::Row::iterator it2 = os_begin;
+
+  // take the value and increment the iterator
+  arma::uword k(*it1++);
+
+  arma::uword max_it(*it1++);
+
+  arma::uvec  s_must(*it1++);
+
+  if ( s_must.size() > 0 ) {
+
+    for (arma::uword i = 0; i < s_must.size(); i++) {
+
+      s_must(i) = *it1++;
+
+    }
+
+  }
+
+  Rcout << "skm_rgi_rpl - construct arg list k: " << k << std::endl;
+  Rcout << "skm_rgi_rpl - construct arg list max_it: " << max_it << std::endl;
+  Rcout << "skm_rgi_rpl - construct arg list s_must: " << s_must.t() << std::endl;
+
+  skmSolution a_skmSolution = skm::skm_rgi_cpp(k, s_must, max_it);
+
+  // construct os - <o, s>
+  *it2 = a_skmSolution.o;
+
+  it2++;
+
+  for (unsigned int i = 0; i < a_skmSolution.s.size() ; i++) {
+
+    *it2 = a_skmSolution.s(i);
+
+    it2++;
+
+  }
+
+  Rcout << "skm_rgi_rpl - construct skmRplSolution: " << as<NumericVector>(wrap(a_skmSolution)) << std::endl;
+
+}
+
+
+// skm_mlp_cpp: solve skm with multiple runs in parallel
+// RcppParallel <http://rcppcore.github.io/RcppParallel>
+
+// [[Rcpp::export]]
+List skm_mlp_cpp(const NumericMatrix x, int k, IntegerVector s_must, int max_it, int max_at) {
+
+  NumericMatrix os(max_at, k + 1);
+
+  Rcout << "skm_mlp_cpp - check input x: " << std::endl << x << std::endl;
+  Rcout << "skm_mlp_cpp - check input os: " << os << std::endl;
+  Rcout << "skm_mlp_cpp - check input k: " << k << std::endl;
+  Rcout << "skm_mlp_cpp - check input s_must: " << s_must << std::endl;
+  Rcout << "skm_mlp_cpp - check input max_it: " << max_it << std::endl;
+  Rcout << "skm_mlp_cpp - check input max_at: " << max_at << std::endl;
+
+  IntegerVector arg(3 + s_must.size());
+
+  arg(0) = k;
+
+  arg(1) = max_it;
+
+  arg(2) = s_must.size();
+
+  if ( s_must.size() > 0 ) {
+
+    for (arma::uword i = 0; i < s_must.size(); i++) {
+
+      arg(3 + i) = s_must(i);
+    }
+
+  }
+
+  Rcout << "skm_mlp_cpp - construct arg: " << arg << std::endl;
+
+  skmRpl a_skmRpl(x, os, arg);
+
+  parallelFor(0, max_at, a_skmRpl);
+
+  return Rcpp::List::create(Rcpp::Named("os") = os);
+
 }

@@ -8,7 +8,7 @@ zipcode case
 ------------
 
 ``` r
-library(data.table)
+library(skm)
 
 library(plyr)
 library(dplyr)
@@ -35,8 +35,9 @@ ddat <- CJ(s = dzip[zip_grp == "534", zip],
   merge(dzip[ , .(t = zip, pop, hhd, ink)], by = "t") %>%
   `class<-`(c("data.table", "data.frame"))
 
+debug(skm_mlp)
 
-xdt <- dcast(ddat[ , .(s, t, d = dist)], s ~ t, value.var = "d")
+skm_mlp(x = ddat, d_colname = "dist")
 ```
 
 TODO:
