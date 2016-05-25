@@ -2,11 +2,11 @@
 % Please edit documentation in R/RcppExports.R
 \name{col_rgn_val}
 \alias{col_rgn_val}
-\title{col_rgn_val: colvec diff max min value within limited range}
+\title{col_rgn_val: colvec range = max - min value within limited range}
 \usage{
 col_rgn_val(u, wlmt)
 }
 \description{
-col_rgn_val: colvec diff max min value within limited range
+col_rgn_val: colvec range = max - min value within limited range
 }
 

@@ -9,7 +9,7 @@
 #------------------------------------------------------------------------------#
 #------------------------------------ load ------------------------------------#
 #------------------------------------------------------------------------------#
-loadModule("skm_module", TRUE)
+# loadModule("skm_module", TRUE)
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
@@ -23,9 +23,16 @@ loadModule("skm_module", TRUE)
 #------------------------------------ main ------------------------------------#
 #------------------------------------------------------------------------------#
 
-# skm_mlp_cpp: solve skm with multiple runs in parallel via RcppParallel
-# skm_mlp_cpp(const NumericMatrix x, arma::uword k, arma::uvec s_must,
-#             arma::uword max_it, arma::uword max_at)
+# skm_mlp_cpp: solve skm with multiple runs in serial via Rcpp RcppArmadillo
+# Rcpp::List skm_mlp_cpp(const arma::mat& x, const arma::uword k,
+#                        const arma::uvec& s_must,
+#                        const arma::uword max_it, const arma::uword max_at)
+
+# skmRpl_mlp_cpp: solve skm with multiple runs in serial via Rcpp RcppParallel
+# Rcpp::List skmRpl_mlp_cpp(const NumericMatrix x, const unsigned int k,
+#                           const IntegerVector s_must,
+#                           const unsigned int max_it, const unsigned int max_at,
+#                           const unsigned int skmRpl_GS = 100)
 
 #' skm_mlp: selective k-means with multiple runs in parallel
 #' a selective kmeans solve the following problem w. parallel processing:
@@ -49,6 +56,8 @@ loadModule("skm_module", TRUE)
 #' @param s_init: initialize optimization with s_init<must have length k>
 #' @param max_it: max number of iterations can run for optimizing result.
 #' @param max_at: max number of attempts/repeats on running for optimial.
+#' @param goParallel: use parallel verison skm<Rpl>_mlp_cpp() solver or not.
+#' @param skmRpl_GS: set gain size of parallel run ignore if not goParallel.
 #' TODO: add min_at: min number of attempts/repeats on running for optimial,
 #' also add halt_at: number attempts before stop if no improve after min_at.
 #' @return list(s, t):
@@ -59,42 +68,79 @@ loadModule("skm_module", TRUE)
 #' @importFrom Rcpp sourceCpp
 skm_mlp <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
                     w_colname = NULL, s_must = integer(0L), s_init = integer(0L),
-                    max_it = 100L, max_at = 100L) {
+                    max_it = 100L, max_at = 100L, goParallel = FALSE, skmRpl_GS = 100L) {
 
-  # x must be data.table
-  if ( ! all( class(x) == c("data.table", "data.frame") ) ) { warning("skm: x should be a data.table.\n") }
+  #- parallel processing?
+  if ( goParallel ) {
 
-  x <- x %>% `class<-`(c("data.table", "data.frame"))
+    message("skm_mlp: parallel processing is high risk:\n\t1. set skmRpl_GS (gain size) for protection.\n\t2. set setThreadOptions(numThreads = defaultNumThreads() / 2) for more protection.\n\t3. author test parallel on with max_at/skmRpl_GS equals 2 to 10, stable ok, performance gain slight.\n")
 
-  # create analytical dataset xdat
+  }
+
+  #- x must be data.table
+  if ( ! all( class(x) == c("data.table", "data.frame") ) ) {
+
+    warning("skm_mlp: x should be a data.table.\n")
+
+    x <- x %>% `class<-`(c("data.table", "data.frame"))
+
+  }
+
+  #- create analytical dataset xdat
   eval(parse(text = 'xdt <- x[ , .(' %+%
                's = ' %+% s_colname %+% ', ' %+%
                't = ' %+% t_colname %+% ', ' %+%
                'd = ' %+% d_colname %+%
                ifelse(is.null(w_colname), '', ' * ' %+% w_colname) %+% ') ]' ))
 
-  # xdt must have full combination of s and t
+  #- xdt must have full combination of s and t
   stopifnot( nrow(xdt) == length(unique(xdt[["s"]])) * length(unique(xdt[["t"]])) )
 
   # dcast.data.table xdt long into wide
   xdt <- dcast(xdt, s ~ t, value.var = "d")
 
-  # assign attributes s_name and t_name
-
-  xmt_s_name <- xdt[["s"]]
+  #- create name vector s_name and t_name
+  s_name <- xdt[["s"]]
 
   xdt[ , s := NULL]
 
-  xmt_t_name <- names(xdt)
+  t_name <- names(xdt)
 
-  xmt <- as.matrix(xdt)
+  #- apply skm_mlp_cpp or skmRpl_mlp_cpp to retrive solutions
 
-  # apply skm_mlp_cpp to retrive solutions
-  skm_lst <- skm_mlp_cpp(x = xmt, k = k, s_must = s_must, max_it = max_it, max_at = max_at)
+  xm <- as.matrix(xdt)
 
-  return(skm_lst);
+  eval(parse(text = 'xs <- data.table(o = "' %+% d_colname %+% '", ' %+%
+               'w = "' %+% w_colname %+% '", ' %+%
+               'k = k, ' %+%
+               's = character(length(k)), ' %+%
+               'd = numeric(length(k)))'))
+
+  for ( ik in 1L:length(k) ) {
+
+    if ( !goParallel ) {
+
+      skm_lst <- skm_mlp_cpp(x = xm, k = k[i], s_must = s_must, max_it = max_it, max_at = max_at)
+
+    } else {
+
+      skm_lst <- skmRpl_mlp_cpp(x = xm, k = k[i], s_must = s_must, max_it = max_it, max_at = max_at, skmRpl_GS = skmRpl_GS)
+
+    }
+
+    #- collect result into data.table
+
+    ## s - optim s w.r.t. min(sum(min(d(s, t) * w(s, t))))
+    ## s - cpp return s indices which indexed from 0 not 1
+    set(xs, ik, 4L, s_name[ c(skm_lst$s + 1) ])
+
+    ## d - average d weighted by w over all t
+    set(xs, ik, 5L, skm_list$o / length(t_name))
+
+  }
+
+  return(xs);
 }
-
 
 #------------------------------------------------------------------------------#
 

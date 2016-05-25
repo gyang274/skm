@@ -13,6 +13,6 @@ Depends:
 URL: http://github.com/gyang274/skm
 BugReports: http://github.com/gyang274/skm/issues
 RoxygenNote: 5.0.1
-Imports: methods, Rcpp (>= 0.12.5), RcppArmadillo, RcppParallel
-LinkingTo: Rcpp, RcppArmadillo, RcppParallel
+Imports: methods, Rcpp (>= 0.12.5), RcppParallel, RcppArmadillo
+LinkingTo: Rcpp, RcppParallel, RcppArmadillo
 SystemRequirements: GNU make

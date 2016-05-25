@@ -9,7 +9,7 @@
 
 using namespace Rcpp;
 // using namespace arma;
-// using namespace RcppParallel;
+using namespace RcppParallel;
 
 
 // <http://www.cplusplus.com/doc/tutorial/classes/>
@@ -23,32 +23,5 @@ using namespace Rcpp;
 // x[1]   second object pointed to by x
 // x[n]   (n+1)th object pointed to by x
 
-
-class skmSolution {
-
-public:
-
-  double o; arma::uvec s;
-
-  // .constructor
-  skmSolution(double o, arma::uvec s) : o(o) , s(s) {}
-
-};
-
-RCPP_EXPOSED_CLASS(skmSolution);
-
-RCPP_MODULE(skm_module) {
-
-  using namespace Rcpp;
-
-  class_<skmSolution>( "skmSolution" )
-
-    .constructor<double, arma::uvec>()
-
-    .field( "o", &skmSolution::o )
-    .field( "s", &skmSolution::s )
-    ;
-
-}
 
 #endif // __SKM__

@@ -1,6 +1,7 @@
 # wfx.r
 
 require(Rcpp)
+require(RcppParallel)
 require(RcppArmadillo)
 
 sourceCpp("wfx/wfx1.cpp")
@@ -38,4 +39,10 @@ xx = skm_cpp(mx, 1L:10L, integer(0L), max_it = 1000)
 rm(list = setdiff(ls(), "mx"))
 
 sourceCpp("wfx/wfx4.cpp")
+
+sourceCpp("wfx/wfx5.cpp")
+
+sourceCpp("wfx/wfx6.cpp")
+
+sourceCpp("wfx/wfx7.cpp")
 

@@ -9,7 +9,7 @@ choose k of s that minimizes sum(min(d(s, t))) with k such s and all t.}
 \usage{
 skm_mlp(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
   w_colname = NULL, s_must = integer(0L), s_init = integer(0L),
-  max_it = 100L, max_at = 100L)
+  max_it = 100L, max_at = 100L, goParallel = FALSE, skmRpl_GS = 100L)
 }
 \arguments{
 \item{x:}{data.table with s - t - d(s, t): s<source> - t<target> - d<dist>,
@@ -38,7 +38,11 @@ objective to minimize d = d * w such as weighted cost of assigning t into s}
 
 \item{max_it:}{max number of iterations can run for optimizing result.}
 
-\item{max_at:}{max number of attempts/repeats on running for optimial.
+\item{max_at:}{max number of attempts/repeats on running for optimial.}
+
+\item{goParallel:}{use parallel verison skm<Rpl>_mlp_cpp() solver or not.}
+
+\item{skmRpl_GS:}{set gain size of parallel run ignore if not goParallel.
 TODO: add min_at: min number of attempts/repeats on running for optimial,
 also add halt_at: number attempts before stop if no improve after min_at.}
 }

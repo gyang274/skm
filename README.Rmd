@@ -52,12 +52,21 @@ ddat <- CJ(s = dzip[zip_grp == "534", zip],
 
 debug(skm_mlp)
 
-skm_mlp(x = ddat, d_colname = "dist")
+skm_mlp(x = ddat, d_colname = "dist", w = "pop")
+
+nr = 8
+nc = 20
+x = matrix(abs(runif(nr * nc) * sample(1:100, nr*nc, replace = TRUE)), nr, nc)
+skm_mlp_cpp(x = x, k = min(max(2, round(nr/10)), nr), s_must = integer(0L), max_it = 100L, max_at = 20L)
+
+skmRpl_mlp_cpp(x = x, k = min(max(2, round(nr/10)), nr), s_must = integer(0L), max_it = 100L, max_at = 20L, skmRpl_GS = 10L)
 
 ```
 
 
 ## TODO:
+
+- parallelFor(begin, end, \_operator, \grain_size)?
 
 - install ccache to speed up complie of package: https://ccache.samba.org/
 

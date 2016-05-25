@@ -29,17 +29,16 @@ col_max_val <- function(u, wlmt) {
     .Call('skm_col_max_val', PACKAGE = 'skm', u, wlmt)
 }
 
-#' col_rgn_val: colvec diff max min value within limited range
+#' col_rgn_val: colvec range = max - min value within limited range
 col_rgn_val <- function(u, wlmt) {
     .Call('skm_col_rgn_val', PACKAGE = 'skm', u, wlmt)
 }
 
-#' rgn_vec: colvec range from s to z or from 0 to s when z NIL
-rgn_vec <- function(s, z = 0L) {
-    .Call('skm_rgn_vec', PACKAGE = 'skm', s, z)
-}
-
 skm_mlp_cpp <- function(x, k, s_must, max_it, max_at) {
     .Call('skm_skm_mlp_cpp', PACKAGE = 'skm', x, k, s_must, max_it, max_at)
+}
+
+skmRpl_mlp_cpp <- function(x, k, s_must, max_it, max_at, skmRpl_GS = 100L) {
+    .Call('skm_skmRpl_mlp_cpp', PACKAGE = 'skm', x, k, s_must, max_it, max_at, skmRpl_GS)
 }
 
