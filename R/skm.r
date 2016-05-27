@@ -116,7 +116,7 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
   eval(parse(text = 'xdt <- x[ , .(' %+%
                's = ' %+% s_colname %+% ', ' %+%
                't = ' %+% t_colname %+% ', ' %+%
-               'd = ' %+% d_colname %+% ', ' %+%
+               'd = ' %+% 'as.numeric(' %+% d_colname %+% ')' %+% ', ' %+%
                'w = ' %+% ifelse(is.null(w_colname), 1, w_colname) %+% ') ]' ))
 
   ## sum of weights from each s <souce> should be equal to 1
@@ -187,7 +187,7 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
 
     message("skm_mls: optimizing on k <", k[ik], "> ...\n")
 
-    skm_lst <- skm_mls_cpp(x = xmt, k = k[ik], g = g, s_must = s_must,
+    skm_lst <- skm_mls_cpp(x = xmt, k = k[ik], g = g, s_must = s_must_idx_cpp,
                            max_it = max_it, max_at = max_at)
 
     #- collect result into data.table
