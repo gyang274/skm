@@ -50,8 +50,10 @@ skmRpl_mlp_cpp(x = x, k = min(max(2, round(nr/10)), nr), s_must = integer(0L), m
 TODO:
 -----
 
--   parallelFor(begin, end, \_operator, \_size)?
+-   set `class<-("skm")` on skm result objects?
+
+-   parallelFor(begin, end, \_operator, \_size)? - DONE.
 
 -   install ccache to speed up complie of package: <https://ccache.samba.org/>
 
--   add `class<-("skm")` into the object of skm result?
+-   learn source code ~/R/R-3.3.0/library/RcppArmadillo/include/RcppArmadilloExtensions/sample.h

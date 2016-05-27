@@ -2,6 +2,7 @@
 #include "matrix_minmax.h"
 #include "stratified_sampling.h"
 
+
 #include <RcppArmadillo.h>
 #include <RcppArmadilloExtensions/sample.h>
 #include <RcppParallel.h>

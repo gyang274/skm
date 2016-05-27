@@ -6,6 +6,65 @@
 
 using namespace Rcpp;
 
+// dist_wlatlng_mi_cpp
+double dist_wlatlng_mi_cpp(double lat1, double lng1, double lat2, double lng2);
+RcppExport SEXP skm_dist_wlatlng_mi_cpp(SEXP lat1SEXP, SEXP lng1SEXP, SEXP lat2SEXP, SEXP lng2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type lat1(lat1SEXP);
+    Rcpp::traits::input_parameter< double >::type lng1(lng1SEXP);
+    Rcpp::traits::input_parameter< double >::type lat2(lat2SEXP);
+    Rcpp::traits::input_parameter< double >::type lng2(lng2SEXP);
+    __result = Rcpp::wrap(dist_wlatlng_mi_cpp(lat1, lng1, lat2, lng2));
+    return __result;
+END_RCPP
+}
+// dist_wlatlng_km_cpp
+double dist_wlatlng_km_cpp(double lat1, double lng1, double lat2, double lng2);
+RcppExport SEXP skm_dist_wlatlng_km_cpp(SEXP lat1SEXP, SEXP lng1SEXP, SEXP lat2SEXP, SEXP lng2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type lat1(lat1SEXP);
+    Rcpp::traits::input_parameter< double >::type lng1(lng1SEXP);
+    Rcpp::traits::input_parameter< double >::type lat2(lat2SEXP);
+    Rcpp::traits::input_parameter< double >::type lng2(lng2SEXP);
+    __result = Rcpp::wrap(dist_wlatlng_km_cpp(lat1, lng1, lat2, lng2));
+    return __result;
+END_RCPP
+}
+// distSgl_wlatlng_cpp
+arma::vec distSgl_wlatlng_cpp(arma::vec lat1, arma::vec lng1, arma::vec lat2, arma::vec lng2, std::string measure);
+RcppExport SEXP skm_distSgl_wlatlng_cpp(SEXP lat1SEXP, SEXP lng1SEXP, SEXP lat2SEXP, SEXP lng2SEXP, SEXP measureSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::vec >::type lat1(lat1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type lng1(lng1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type lat2(lat2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type lng2(lng2SEXP);
+    Rcpp::traits::input_parameter< std::string >::type measure(measureSEXP);
+    __result = Rcpp::wrap(distSgl_wlatlng_cpp(lat1, lng1, lat2, lng2, measure));
+    return __result;
+END_RCPP
+}
+// distRpl_wlatlng_cpp
+NumericVector distRpl_wlatlng_cpp(NumericVector lat1, NumericVector lng1, NumericVector lat2, NumericVector lng2, std::string measure, int distRpl_GS);
+RcppExport SEXP skm_distRpl_wlatlng_cpp(SEXP lat1SEXP, SEXP lng1SEXP, SEXP lat2SEXP, SEXP lng2SEXP, SEXP measureSEXP, SEXP distRpl_GSSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type lat1(lat1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lng1(lng1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat2(lat2SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lng2(lng2SEXP);
+    Rcpp::traits::input_parameter< std::string >::type measure(measureSEXP);
+    Rcpp::traits::input_parameter< int >::type distRpl_GS(distRpl_GSSEXP);
+    __result = Rcpp::wrap(distRpl_wlatlng_cpp(lat1, lng1, lat2, lng2, measure, distRpl_GS));
+    return __result;
+END_RCPP
+}
 // col_min_idx
 arma::uword col_min_idx(const arma::colvec& u, const arma::ucolvec& wlmt);
 RcppExport SEXP skm_col_min_idx(SEXP uSEXP, SEXP wlmtSEXP) {
