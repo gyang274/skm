@@ -28,14 +28,27 @@ class skmSolution {
 
 public:
 
-  double o; arma::uvec s;
+  double o; arma::uvec s; arma::vec o_list; arma::umat s_list;
 
   // .constructor
-  skmSolution(double o, arma::uvec s) : o(o) , s(s) {}
+  skmSolution(double o, arma::uvec s) : o(o) , s(s), o_list(o), s_list(s) {}
 
 };
 
 RCPP_EXPOSED_CLASS(skmSolution);
+
+
+skmSolution skm_minmax_cpp(const arma::mat& x, const arma::uvec& s_must);
+
+skmSolution skm_sgl_cpp(const arma::mat& x, const arma::uvec s_init,
+                        const arma::uvec& s_must, const arma::uword max_it);
+
+skmSolution skm_rgi_cpp(const arma::mat& x, const arma::uword k,
+                        const arma::uvec& s_must, const arma::uword max_it);
+
+skmSolution skm_rgs_cpp(const arma::mat& x, const arma::uword k, const arma::uvec g,
+                        const arma::uvec& s_must, const arma::uword max_it);
+
 
 RCPP_MODULE(skm_module) {
 
@@ -49,6 +62,19 @@ RCPP_MODULE(skm_module) {
     .field( "s", &skmSolution::s )
     ;
 
+  function("skm_minmax_cpp", &skm_minmax_cpp,
+           "skmSolution skm_minmax_cpp(const arma::mat& x, const arma::uvec& s_must)");
+
+  function("skm_sgl_cpp", &skm_sgl_cpp,
+           "skmSolution skm_sgl_cpp(const arma::mat& x, const arma::uvec s_init, const arma::uvec& s_must, const arma::uword max_it)");
+
+  function("skm_rgi_cpp", &skm_rgi_cpp,
+           "skmSolution skm_rgi_cpp(const arma::mat& x, const arma::uword k, const arma::uvec& s_must, const arma::uword max_it)");
+
+  function("skm_rgs_cpp", &skm_rgs_cpp,
+           "skmSolution skm_rgs_cpp(const arma::mat& x, const arma::uword k, const arma::uvec g, const arma::uvec& s_must, const arma::uword max_it)");
+
 }
+
 
 #endif // __SKM__

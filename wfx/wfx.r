@@ -20,6 +20,8 @@ xx[["t"]]
 
 xx$o
 
+yy <- moduleFuncTest(1:10, 1:10, 3.0)
+
 sourceCpp("wfx/wfx3.cpp")
 
 mx = matrix(sample(100, 28), 7, 4)
@@ -46,3 +48,4 @@ sourceCpp("wfx/wfx6.cpp")
 
 sourceCpp("wfx/wfx7.cpp")
 
+sourceCpp("wfx/wfx8.cpp")

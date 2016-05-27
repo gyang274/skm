@@ -32,10 +32,20 @@ class skmSolution {
 public:
 
   //constructor
-  skmSolution(arma::uvec s_, arma::uvec t_, double o_) : s(s_) , t(t_), o(o_) {}
+  skmSolution(arma::uvec s, arma::uvec t, double o) : s(s) , t(t), o(o) {}
 
   arma::uvec s; arma::uvec t; double o;
 };
+
+RCPP_EXPOSED_CLASS(skmSolution);
+
+skmSolution moduleFuncTest(arma::uvec s, arma::uvec t, double o) {
+
+  Rcout << "moduleFuncTest: enter point!" << std::endl;
+
+  return skmSolution(s, t, o);
+
+}
 
 // <http://dirk.eddelbuettel.com/code/rcpp/Rcpp-modules.pdf>
 // expose class into R using RCPP_MODULE
@@ -49,5 +59,7 @@ RCPP_MODULE(skmSolution_module) {
   .field( "t", &skmSolution::t )
   .field( "o", &skmSolution::o )
   ;
+
+  function("moduleFuncTest", &moduleFuncTest);
 
 }

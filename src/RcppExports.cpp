@@ -81,6 +81,22 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// skm_mls_cpp
+Rcpp::List skm_mls_cpp(const arma::mat& x, const arma::uword k, const arma::uvec g, const arma::uvec& s_must, const arma::uword max_it, const arma::uword max_at);
+RcppExport SEXP skm_skm_mls_cpp(SEXP xSEXP, SEXP kSEXP, SEXP gSEXP, SEXP s_mustSEXP, SEXP max_itSEXP, SEXP max_atSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec >::type g(gSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type s_must(s_mustSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type max_it(max_itSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type max_at(max_atSEXP);
+    __result = Rcpp::wrap(skm_mls_cpp(x, k, g, s_must, max_it, max_at));
+    return __result;
+END_RCPP
+}
 // skmRpl_mlp_cpp
 Rcpp::List skmRpl_mlp_cpp(const NumericMatrix x, const unsigned int k, const IntegerVector s_must, const unsigned int max_it, const unsigned int max_at, const unsigned int skmRpl_GS);
 RcppExport SEXP skm_skmRpl_mlp_cpp(SEXP xSEXP, SEXP kSEXP, SEXP s_mustSEXP, SEXP max_itSEXP, SEXP max_atSEXP, SEXP skmRpl_GSSEXP) {
@@ -94,6 +110,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const unsigned int >::type max_at(max_atSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type skmRpl_GS(skmRpl_GSSEXP);
     __result = Rcpp::wrap(skmRpl_mlp_cpp(x, k, s_must, max_it, max_at, skmRpl_GS));
+    return __result;
+END_RCPP
+}
+// stratified_sampling
+arma::uvec stratified_sampling(const arma::uvec& v, const arma::uword k, const arma::uvec& g);
+RcppExport SEXP skm_stratified_sampling(SEXP vSEXP, SEXP kSEXP, SEXP gSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::uvec& >::type v(vSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type g(gSEXP);
+    __result = Rcpp::wrap(stratified_sampling(v, k, g));
     return __result;
 END_RCPP
 }

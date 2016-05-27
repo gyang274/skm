@@ -9,13 +9,14 @@
 #------------------------------------------------------------------------------#
 #------------------------------------ load ------------------------------------#
 #------------------------------------------------------------------------------#
-# loadModule("skm_module", TRUE)
+# Rcpp export class and module
+loadModule("skm_module", TRUE)
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
 #------------------------------- sets r-options -------------------------------#
 #------------------------------------------------------------------------------#
-# RcppParallel: default use all threads
+# protect from using all thread when run skmRpl parallel
 # setThreadOptions(numThreads = defaultNumThreads() / 2)
 #------------------------------------------------------------------------------#
 
@@ -34,7 +35,13 @@
 #                           const unsigned int max_it, const unsigned int max_at,
 #                           const unsigned int skmRpl_GS = 100)
 
-#' skm_mlp: selective k-means with multiple runs in parallel
+# skm_mls_cpp: solve skm with multiple runs in serial via Rcpp RcppArmadillo
+# skm_mls_cpp improved selection efficiency by stratified sampling s_init w.r.t g
+# Rcpp::List skm_mls_cpp(const arma::mat& x, const arma::uword k, arma::uvec g,
+#                        const arma::uvec& s_must,
+#                        const arma::uword max_it, const arma::uword max_at)
+
+#' skm_mls: selective k-means solver - wrapper over skm_mls_cpp
 #' a selective kmeans solve the following problem w. parallel processing:
 #' assume a data.table of s - t - d(s, t) for all combinations of s and t,
 #' choose k of s that minimizes sum(min(d(s, t))) with k such s and all t.
@@ -53,36 +60,69 @@
 #' @param w_colname: w<weighting> - optional: when none null optimizing toward
 #' objective to minimize d = d * w such as weighted cost of assigning t into s
 #' @param s_must: length <= k-1 s must in result: conditional optimizing.
-#' @param s_init: initialize optimization with s_init<must have length k>
+#' @param s_ggrp: s_init will be stratified sampling from s w.r.t s_ggrp.
 #' @param max_it: max number of iterations can run for optimizing result.
 #' @param max_at: max number of attempts/repeats on running for optimial.
 #' @param goParallel: use parallel verison skm<Rpl>_mlp_cpp() solver or not.
 #' @param skmRpl_GS: set gain size of parallel run ignore if not goParallel.
 #' TODO: add min_at: min number of attempts/repeats on running for optimial,
 #' also add halt_at: number attempts before stop if no improve after min_at.
-#' @return list(s, t):
-#' s - data.table with s<source> - k<0, 1..k> when 0 it not as being selected
-#' when 1 - k it is selected as the <ik>th center - ik as value i in column k
-#' t - data.table with t<target> - k<1..k> where k is assigning of t to <ik>s
+#' @return data.table with:
+#' o - objective - based on d_colname
+#' w - weighting - based on w_colname
+#' k - k<k-list> - based on k - input
+#' s - s<source> - based on s_colname
+#' d - weighed averge value of d_colname weighed by w_column when s are selected.
 #' @useDynLib skm
 #' @importFrom Rcpp sourceCpp
-skm_mlp <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
-                    w_colname = NULL, s_must = integer(0L), s_init = integer(0L),
-                    max_it = 100L, max_at = 100L, goParallel = FALSE, skmRpl_GS = 100L) {
+skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
+                    w_colname = NULL, s_ggrp = integer(0L), s_must = integer(0L),
+                    max_it = 100L, max_at = 100L, auto_create_ggrp = TRUE,
+                    extra_immaculatism = TRUE, extra_at = 10L) {
 
-  #- parallel processing?
-  if ( goParallel ) {
+  #- check input list
 
-    message("skm_mlp: parallel processing is high risk:\n\t1. set skmRpl_GS (gain size) for protection.\n\t2. set setThreadOptions(numThreads = defaultNumThreads() / 2) for more protection.\n\t3. author test parallel on with max_at/skmRpl_GS equals 2 to 10, stable ok, performance gain slight.\n")
+  message("skm_mls: skm solver via skm_mls_cpp ...\n")
+
+  .ptc <- proc.time()
+
+  ## parallel processing? (inherit message from skm_mlp)
+  # if ( goParallel ) {
+  #
+  #   message("skm_mlp: parallel processing is high risk:\n\t1. set skmRpl_GS (gain size) for protection.\n\t2. set setThreadOptions(numThreads = defaultNumThreads() / 2) for more protection.\n\t3. author test parallel on with max_at/skmRpl_GS equals 2 to 10, stable ok, performance gain slight.\n")
+  #
+  # }
+
+  ## x must be data.table
+  if ( ! all( class(x) == c("data.table", "data.frame") ) ) {
+
+    warning("skm_mls: x should be a data.table.\n")
+
+    x <- x %>% `class<-`(c("data.table", "data.frame"))
 
   }
 
-  #- x must be data.table
-  if ( ! all( class(x) == c("data.table", "data.frame") ) ) {
+  ##  k list must be sort and unique
+  if ( !all(k == sort(unique(k))) ) {
 
-    warning("skm_mlp: x should be a data.table.\n")
+    warning("skm_mls: k must be sort and all unique.\n")
 
-    x <- x %>% `class<-`(c("data.table", "data.frame"))
+    k = sort(unique(k))
+
+  }
+
+  ## s_ggrp
+
+  ## s_ggrp must a data.table contain all s - g mapping
+  ## s_ggrp integer(0L) and auto_create_ggrp TRUE would
+  ## create g = substr(s_name, 1, 1) as default strata.
+
+  ## s_must
+  if ( length(s_must) > length(unique(s_must)) ) {
+
+    warning("skm_mls: s_must must be unique.\n")
+
+    s_must = unique(s_must)
 
   }
 
@@ -90,54 +130,131 @@ skm_mlp <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
   eval(parse(text = 'xdt <- x[ , .(' %+%
                's = ' %+% s_colname %+% ', ' %+%
                't = ' %+% t_colname %+% ', ' %+%
-               'd = ' %+% d_colname %+%
-               ifelse(is.null(w_colname), '', ' * ' %+% w_colname) %+% ') ]' ))
+               'd = ' %+% d_colname %+% ', ' %+%
+               'w = ' %+% ifelse(is.null(w_colname), 1, w_colname) %+% ') ]' ))
 
-  #- xdt must have full combination of s and t
+  ## sum of weights from each s <souce> should be equal to 1
+  xdt <- xdt %>%
+    dplyr::group_by(s) %>% dplyr::mutate(d = d * w / sum(w)) %>% dplyr::ungroup() %>%
+    dplyr::select(-w) %>% `class<-`(c("data.table", "data.frame"))
+
+  ## xdt must have full combination of s and t
+  ## TODO: impute maximum double into cell when not full combination
+  ## sent warning message and impute cell rather than stops the call
   stopifnot( nrow(xdt) == length(unique(xdt[["s"]])) * length(unique(xdt[["t"]])) )
 
-  # dcast.data.table xdt long into wide
-  xdt <- dcast(xdt, s ~ t, value.var = "d")
+  ## dcast.data.table xdt long into wide
+  xdt <- data.table::dcast(xdt, s ~ t, value.var = "d")
 
-  #- create name vector s_name and t_name
+  #- create input matrix xmt and name vector s_name and t_name from xdt
+
   s_name <- xdt[["s"]]
 
   xdt[ , s := NULL]
 
   t_name <- names(xdt)
 
-  #- apply skm_mlp_cpp or skmRpl_mlp_cpp to retrive solutions
+  ## check or construct s_ggrp for stratified sampling
+  if ( length(s_ggrp) == 0 && auto_create_ggrp ) {
 
-  xm <- as.matrix(xdt)
+    message("skm_mls: auto_create g w.r.t first letter of s_name.\n")
+
+    g = as.numeric(as.factor(substr(s_name, 1, 1)))
+
+  } else {
+
+    if ( c("s", "g") %in% names(s_ggrp) ) {
+
+      g = as.numeric(as.factor(plyr::mapvalues(s_name, from = s_ggrp[["s"]], to = s_ggrp[["g"]])))
+
+    } else {
+
+      message("skm_mls: auto_create is off and no s_ggrp provided,
+              g is created as all one - no stratified sampling.\n")
+
+      g = rep(1, length(s_name))
+
+    }
+
+  }
+
+  ## create s_must list - caution - cpp index started from 0
+  s_must_idx_cpp = integer(0L)
+
+  if( length(s_must) > 0 ) {
+
+    s_must_idx_cpp = match(s_must, s_name) - 1
+
+  }
+
+  #- apply skm_mls_cpp
+
+  xmt <- as.matrix(xdt)
 
   eval(parse(text = 'xs <- data.table(o = "' %+% d_colname %+% '", ' %+%
                'w = "' %+% w_colname %+% '", ' %+%
                'k = k, ' %+%
-               's = character(length(k)), ' %+%
+               's = list(list(character(0L))), ' %+%
                'd = numeric(length(k)))'))
 
   for ( ik in 1L:length(k) ) {
 
-    if ( !goParallel ) {
+    message("skm_mls: optimizing on k <", k[ik], "> ...\n")
 
-      skm_lst <- skm_mlp_cpp(x = xm, k = k[i], s_must = s_must, max_it = max_it, max_at = max_at)
-
-    } else {
-
-      skm_lst <- skmRpl_mlp_cpp(x = xm, k = k[i], s_must = s_must, max_it = max_it, max_at = max_at, skmRpl_GS = skmRpl_GS)
-
-    }
+    skm_lst <- skm_mls_cpp(x = xmt, k = k[ik], g = g, s_must = s_must,
+                           max_it = max_it, max_at = max_at)
 
     #- collect result into data.table
 
     ## s - optim s w.r.t. min(sum(min(d(s, t) * w(s, t))))
     ## s - cpp return s indices which indexed from 0 not 1
-    set(xs, ik, 4L, s_name[ c(skm_lst$s + 1) ])
+    set(xs, ik, 4L, list(list(s_name[c(skm_lst$s + 1)])))
 
     ## d - average d weighted by w over all t
-    set(xs, ik, 5L, skm_list$o / length(t_name))
+    set(xs, ik, 5L, skm_lst$o)
+
+    #- set extra run based on previous optim s<source>
+    if ( ik > 1 && extra_immaculatism ) {
+
+      message("skm_mls: set extra runs based on previous optim s ...\n")
+
+      ## s_init_idx_cpp_0 - caution - cpp index started from 0.
+      s_init_idx_cpp_0 = match(c( unlist(xs[ik - 1, s, drop = TRUE]) ), s_name) - 1
+
+      for ( jk in c(1L:extra_at) ) {
+
+        s_init_idx_cpp_1 = sample(x = setdiff( seq(length(s_name)) - 1, s_init_idx_cpp_0 ),
+                                  size = k[ik] - length(s_init_idx_cpp_0), replace = FALSE)
+
+        a_skmSolution = skm_sgl_cpp(x = xmt, s_init = c(s_init_idx_cpp_0, s_init_idx_cpp_1),
+                                    s_must = s_must_idx_cpp, max_it = max_it)
+
+        if ( a_skmSolution[["o"]] < xs[ik, d, drop = TRUE] ) {
+
+          message("skm_mls: encounter better solution at jk <", jk, "> run based on previous optim s ...\n")
+
+          set(xs, ik, 4L, list(list(s_name[c(a_skmSolution[["s"]] + 1)])))
+
+          ## d - average d weighted by w over all t
+          set(xs, ik, 5L, a_skmSolution[["o"]])
+
+        }
+
+      }
+
+      message("skm_mls: set extra runs based on previous optim s ... done.\n")
+
+    }
+
+    message("skm_mls: optimizing on k <", k[ik], "> ... done.\n")
 
   }
+
+  .ptd <- proc.time() - .ptc
+
+  message("skm_mls: cosumes ", .ptd[3], " seconds.\n")
+
+  message("skm_mls: skm solver via skm_mls_cpp ... done.\n")
 
   return(xs);
 }

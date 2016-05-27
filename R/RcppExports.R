@@ -38,7 +38,21 @@ skm_mlp_cpp <- function(x, k, s_must, max_it, max_at) {
     .Call('skm_skm_mlp_cpp', PACKAGE = 'skm', x, k, s_must, max_it, max_at)
 }
 
+skm_mls_cpp <- function(x, k, g, s_must, max_it, max_at) {
+    .Call('skm_skm_mls_cpp', PACKAGE = 'skm', x, k, g, s_must, max_it, max_at)
+}
+
 skmRpl_mlp_cpp <- function(x, k, s_must, max_it, max_at, skmRpl_GS = 100L) {
     .Call('skm_skmRpl_mlp_cpp', PACKAGE = 'skm', x, k, s_must, max_it, max_at, skmRpl_GS)
+}
+
+#' stratified_sampling: from v select k w.r.t stratify structure g.
+#' TODO: implementing via template so v is flexible as vec or uvec.
+#' @param v: candidate v.
+#' @param k: selection k.
+#' @param g: stratify structure g.
+#' @return s: select from v length k stratified by g.
+stratified_sampling <- function(v, k, g) {
+    .Call('skm_stratified_sampling', PACKAGE = 'skm', v, k, g)
 }
 

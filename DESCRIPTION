@@ -7,12 +7,12 @@ Maintainer: Guang Yang <gyang274@gmail.com>
 Description: Selective K-Means (SKM).
 License: MIT + file LICENSE
 LazyData: TRUE
-Depends:
-    data.table,
-    magrittr, Rcpp, RcppArmadillo, RcppParallel
+Depends: data.table, magrittr,
+    Rcpp (>= 0.12.5), RcppArmadillo, RcppParallel
 URL: http://github.com/gyang274/skm
 BugReports: http://github.com/gyang274/skm/issues
 RoxygenNote: 5.0.1
-Imports: methods, Rcpp (>= 0.12.5), RcppParallel, RcppArmadillo
-LinkingTo: Rcpp, RcppParallel, RcppArmadillo
+Imports: plyr, dplyr, methods,
+    Rcpp (>= 0.12.5), RcppArmadillo, RcppParallel
+LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 SystemRequirements: GNU make
