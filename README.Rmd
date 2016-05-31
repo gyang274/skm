@@ -66,7 +66,9 @@ skmRpl_mlp_cpp(x = x, k = min(max(2, round(nr/10)), nr), s_must = integer(0L), m
 
 ## TODO:
 
-- set `class<-("skm")` on skm result objects?
+- skm\_mls: Add capability to handle fixed cost for each s - add an argument to take a fixed cost for each s, construct a diagnol matrix and append right to s-t matrix, and then skm\_mls\_cpp.
+
+- set `class<-("skm")` on skm result objects? - NOTO
 
 - parallelFor(begin, end, \_operator, \grain_size)? - DONE.
 

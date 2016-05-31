@@ -93,7 +93,7 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
 
     warning("skm_mls: k must be sort and all unique.\n")
 
-    k = sort(unique(k))
+    k <- sort(unique(k))
 
   }
 
@@ -108,7 +108,7 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
 
     warning("skm_mls: s_must must be unique.\n")
 
-    s_must = unique(s_must)
+    s_must <- unique(s_must)
 
   }
 
@@ -145,31 +145,31 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
 
     message("skm_mls: auto_create g w.r.t first letter of s_name.\n")
 
-    g = as.numeric(as.factor(substr(s_name, 1, 1)))
+    g <- as.numeric(as.factor(substr(s_name, 1, 1)))
 
   } else {
 
     if ( c("s", "g") %in% names(s_ggrp) ) {
 
-      g = as.numeric(as.factor(plyr::mapvalues(s_name, from = s_ggrp[["s"]], to = s_ggrp[["g"]])))
+      g <- as.numeric(as.factor(plyr::mapvalues(s_name, from = s_ggrp[["s"]], to = s_ggrp[["g"]])))
 
     } else {
 
       message("skm_mls: auto_create is off and no s_ggrp provided,
               g is created as all one - no stratified sampling.\n")
 
-      g = rep(1, length(s_name))
+      g <- rep(1, length(s_name))
 
     }
 
   }
 
   ## create s_must list - caution - cpp index started from 0
-  s_must_idx_cpp = integer(0L)
+  s_must_idx_cpp <- integer(0L)
 
   if( length(s_must) > 0 ) {
 
-    s_must_idx_cpp = match(s_must, s_name) - 1
+    s_must_idx_cpp <- match(s_must, s_name) - 1
 
   }
 
@@ -205,15 +205,15 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
       message("skm_mls: set extra runs based on previous optim s ...\n")
 
       ## s_init_idx_cpp_0 - caution - cpp index started from 0.
-      s_init_idx_cpp_0 = match(c( unlist(xs[ik - 1, s, drop = TRUE]) ), s_name) - 1
+      s_init_idx_cpp_0 <- match(c( unlist(xs[ik - 1, s, drop = TRUE]) ), s_name) - 1
 
       for ( jk in c(1L:extra_at) ) {
 
-        s_init_idx_cpp_1 = sample(x = setdiff( seq(length(s_name)) - 1, s_init_idx_cpp_0 ),
-                                  size = k[ik] - length(s_init_idx_cpp_0), replace = FALSE)
-
-        a_skmSolution = skm_sgl_cpp(x = xmt, s_init = c(s_init_idx_cpp_0, s_init_idx_cpp_1),
-                                    s_must = s_must_idx_cpp, max_it = max_it)
+        s_init_idx_cpp_1 <- sample(x = setdiff( seq(length(s_name)) - 1, s_init_idx_cpp_0 ),
+                                   size = k[ik] - length(s_init_idx_cpp_0), replace = FALSE)
+        
+        a_skmSolution <- skm_sgl_cpp(x = xmt, s_init = c(s_init_idx_cpp_0, s_init_idx_cpp_1),
+                                     s_must = s_must_idx_cpp, max_it = max_it)
 
         if ( a_skmSolution[["o"]] < xs[ik, d, drop = TRUE] ) {
 
