@@ -28,11 +28,11 @@ knitr::opts_chunk$set(
 
     + The page is initialized with a U.S. map and a control panel at right hand side:
   
-        ![OWL Page - Initialization](fig/owl_init.png){#owl_init .class width=1280px height=700px}.
+        ![OWL Page - Initialization](fig/owl_init.png){#owl_init .class width=640px height=407px}.
   
     + The page is supported by U.S. zip 2012 data, with a full coverage of all 5 digits zip codes with their population and total incomes estimated from tax file. The analysis assumes user want to build warehouses from the 51 locations one in each states and ship the product to all states. These 51 locations are the 5 digits zip code in the center of 3 digits zip code that has highest population in each state, and are markered as green circle on the map. User can click on the green circle, information will be popup and suggestions will be shown in the message box on the bottom.
   
-        ![OWL Page - Initialzation - Click](fig/owl_init_click.png){#owl_init_click .class width=1280px height=700px}.
+        ![OWL Page - Initialzation - Click](fig/owl_init_click.png){#owl_init_click .class width=640px height=407px}.
 
     + On the control panel, _Optimization Objective_, give options on:
     
@@ -44,11 +44,11 @@ knitr::opts_chunk$set(
     
         4. Choose the number of warehouse want to build. The analysis can be view as: finding \<number\> warehouse location with respect to minize \<weighting\> weighted average \<objective\>, assume \<pre-built\>.
         
-            ![OWL Page - Option](fig/owl_option.png){#owl_option .class width=1280px height=700px}.
+            ![OWL Page - Option](fig/owl_option.png){#owl_option .class width=640px height=407px}.
   
         5. Click _Find Warehouse Locations_ to run analysis and update the map, control panel and page.
     
-        ![OWL Page - Find](fig/owl_find.png){#owl_find .class width=1280px height=700px}.  
+        ![OWL Page - Find](fig/owl_find.png){#owl_find .class width=640px height=407px}.  
     
     + After click _Find Warehouse Locations_, control panel will be updated with a new section _Optimal Warehouse Locations_, which give options on:
   
@@ -60,7 +60,7 @@ knitr::opts_chunk$set(
   
     + After click _Find Warehouse Locations_, page will be updated with a new panel on left bottom corner shown the color schema, and a new panel on right bottom corner shown the solution in table.
   
-        ![OWL Page - View](fig/owl_view.png){#owl_view .class width=1280px height=700px}.
+        ![OWL Page - View](fig/owl_view.png){#owl_view .class width=640px height=407px}.
   
     + Analysis is running in real-time, often takes 8-10 seconds for 100 random starts.
 
