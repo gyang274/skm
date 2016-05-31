@@ -14,13 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 # skm 
 
-skm as selective k-means solves ...
+skm as selective k-means solves the following problem: assume a set of source $s$, a set of target $t$, and the costs $d(s, t)$ of shipping from $s$ to $t$, select $k$ of $s$ that minimizes the overall costs of shipping from $k$ such $s$ to all $t$, e.g., min(sum(min(d(s, t) for each t w.r.t selected k s))).
 
-
-## zipcode case
+## zipcode example
 
 ```{r, eval = FALSE}
 library(skm)
@@ -28,38 +26,75 @@ library(skm)
 library(plyr)
 library(dplyr)
 
-dzip <- fread(input = "dat/dzip2010.txt", sep = "\t", header = FALSE, skip = 0L,
-              nrows = -1L, stringsAsFactors = FALSE, 
-              col.names = c("zip", "lat", "lng", "pop", "hhd", "ink", 
-                            "cnt", "cit", "sta"),
-              colClasses = c("character", rep("numeric", 2), rep("integer", 2), 
-                             "numeric", rep("character", 3))
-              )
+source("app/util.r")
+source("app/src/shine_u.r")
+source("app/src/shine_c.r")
 
-dzip[ , zip_grp := substr(zip, 1, 3) ]
+#- question: a busniess want to start building it's warehouses - objective reach
+#- as many as u.s population as possible - minimize population weighted distance
+#- so where to build the first one, the second one, the third one, and etc.?
 
-# size of zip3
-dzip %>% group_by(zip_grp) %>% summarise(n = n()) %>% arrange(n)
+## load zip dat
+dzip <- load_zip_dat()
 
-# "080"
-ddat <- CJ(s = dzip[zip_grp == "534", zip],
-           t = dzip[zip_grp == "174", zip]) %>%
-  merge(dzip[ , .(s = zip, s_lat = lat, s_lng = lng)], by = "s") %>%
-  merge(dzip[ , .(t = zip, t_lat = lat, t_lng = lng)], by = "t") %>%
-  mutate(dist = dist_wlatlng(s_lat, s_lng, t_lat, t_lng)) %>%
-  merge(dzip[ , .(t = zip, pop, hhd, ink)], by = "t") %>%
+## map zip3 into optim zip5 within zip3 area so
+## can have a lat lng for generating a distance
+# m_zip3_zip5 <- create_mapping_zip3_optim_zip5(dzip)
+# saveRDS(m_zip3_zip5, file = "mat/m_zip3_zip5.RDS")
+m_zip3_zip5 <- readRDS("mat/m_zip3_zip5.RDS")
+
+## create dsrc s <source>
+
+## consider top zip3 in each state with most population as
+## candiate location on building a warehouse in the future
+
+dsrc <- dzip %>% 
+  group_by(state, zip3) %>% 
+  summarise(pop = sum(pop)) %>% 
+  arrange(-pop) %>%
+  group_by(state) %>% 
+  slice(1) %>%
+  select(zip3) %>%
+  merge(m_zip3_zip5, by = "zip3") %>%
+  select(zip) %>%
+  merge(dzip, by = "zip") %>%
+  select(-zip3) %>%
+  mutate(g = as.numeric(as.factor(substr(zip, 1, 1)))) %>%
+  mutate(id = paste0(city, ' - ', state, ' (', zip, ')')) %>%
+  mutate(popup = paste0(
+    '<b>', city, ' - ', state, ' (', zip, ')', '<b><br/>',
+    'Population: ', round(pop / 1000.00000, 2), ' Thousands', '<br/>',
+    'Total Income: ', round(ink / 1000000.00, 2), ' Millions')) %>%
+  rename(s = zip, s_lat = lat, s_lng = lng) %>%
   `class<-`(c("data.table", "data.frame"))
 
-debug(skm_mlp)
+## create ddst t <target> (destination)
+## want to reach all u.s. so all zip included
+ddst <- dzip %>%
+  select(zip, lat, lng, pop, ink, city, state) %>%
+  rename(t = zip, t_lat = lat, t_lng = lng) %>%
+  mutate(p_pop = pop / sum(pop),
+         p_ink = ink / sum(ink)) %>%
+  `class<-`(c("data.table", "data.frame"))
 
-skm_mlp(x = ddat, d_colname = "dist", w = "pop")
+## create analytical data ddzt: dist zone stnt
+## distance zone and estimated time in transit
+ddzt <- yg::CJ.dt(dsrc[ , .(s, s_lat, s_lng)], ddst) %>%
+  mutate(dist = distRpl_wlatlng_cpp(s_lat, s_lng, t_lat, t_lng)) %>%
+  mutate(zone = create_zone_from_dist(dist)) %>%
+  mutate(stnt = create_stnt_from_dist_pop(dist, pop)) %>%
+  `class<-`(c("data.table", "data.frame"))
 
-nr = 8
-nc = 20
-x = matrix(abs(runif(nr * nc) * sample(1:100, nr*nc, replace = TRUE)), nr, nc)
-skm_mlp_cpp(x = x, k = min(max(2, round(nr/10)), nr), s_must = integer(0L), max_it = 100L, max_at = 20L)
 
-skmRpl_mlp_cpp(x = x, k = min(max(2, round(nr/10)), nr), s_must = integer(0L), max_it = 100L, max_at = 20L, skmRpl_GS = 10L)
+## solve problem with skm_mls
+## suppose we want to know the best solution for 1-10 number of warehouse,
+## and also suppose we already built 4 warehouses at NJ, IA, TX and CA,
+## often when number of warehouse <= 4, we select location within these 4,
+## and when number of warehhouse > 4 we build on top of the 4 for best sln
+
+skm_mls(x = ddzt, k = 1L:20L, s_colname = "s", t_colname = "t", 
+        d_colname = "dist", w_colname = "pop", 
+        s_must = c("07017",  "50317", "77804", "94596"))
 
 ```
 
