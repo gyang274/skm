@@ -211,7 +211,7 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
 
         s_init_idx_cpp_1 <- sample(x = setdiff( seq(length(s_name)) - 1, s_init_idx_cpp_0 ),
                                    size = k[ik] - length(s_init_idx_cpp_0), replace = FALSE)
-        
+
         a_skmSolution <- skm_sgl_cpp(x = xmt, s_init = c(s_init_idx_cpp_0, s_init_idx_cpp_1),
                                      s_must = s_must_idx_cpp, max_it = max_it)
 
@@ -242,7 +242,7 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
 
   message("skm_mls: skm solver via skm_mls_cpp ... done.\n")
 
-  return(xs);
+  return(xs)
 }
 
 #------------------------------------------------------------------------------#
