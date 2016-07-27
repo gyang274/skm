@@ -20,7 +20,7 @@ skm as selective k-means solves the following problem: assume a set of source $s
 
 Welcome to see a demonstration application that use skm to find the optimal location for building warehouses: [OWL - Optimal Warehouse Locator](https://gyang.shinyapps.io/skm_owl/).
 
-## zipcode example
+## zip code example
 
 ```{r, eval = FALSE}
 library(skm)
@@ -103,12 +103,12 @@ skm_mls(
 
 ## TODO:
 
-- `skm_mls`: Add capability to handle fixed cost for each s - add an argument to take a fixed cost for each s, construct a diagnol matrix and append right to s-t matrix, and then `skm_mls_cpp`.
++ `skm_mls`: Add capability to handle fixed cost for each s - add an argument to take a fixed cost for each s, construct a diagnol matrix and append right to s-t matrix, and then `skm_mls_cpp`.
 
-- set `class<-("skm")` on skm result objects? - NOTO
++ set `class<-("skm")` on skm result objects? - NOTO
 
-- `parallelFor(begin, end, _operator, grain_size)`? - DONE.
++ `parallelFor(begin, end, _operator, grain_size)`? - DONE.
 
-- install ccache to speed up complie of package: https://ccache.samba.org/
++ install ccache to speed up complie of package: https://ccache.samba.org/
 
-- learn source code ~/R/R-3.3.0/library/RcppArmadillo/include/RcppArmadilloExtensions/sample.h
++ learn source code ~/R/R-3.3.0/library/RcppArmadillo/include/RcppArmadilloExtensions/sample.h

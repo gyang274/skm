@@ -6,8 +6,8 @@ skm as selective k-means solves the following problem: assume a set of source *s
 
 Welcome to see a demonstration application that use skm to find the optimal location for building warehouses: [OWL - Optimal Warehouse Locator](https://gyang.shinyapps.io/skm_owl/).
 
-zipcode example
----------------
+zip code example
+----------------
 
 ``` r
 library(skm)
