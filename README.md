@@ -4,7 +4,7 @@ skm
 
 skm as selective k-means solves the following problem: assume a set of source *s*, a set of target *t*, and the costs *d*(*s*, *t*) of shipping from *s* to *t*, select *k* of *s* that minimizes the overall costs of shipping from *k* such *s* to all *t*, e.g., min(sum(min(d(s, t) for each t w.r.t selected k s))).
 
-Welcome to see a demonstration application that use skm to find the optimal location for building warehouses: [OWL - Optimal Warehouse Locator](https://gyang.shinyapps.io/owl/).
+Welcome to see a demonstration application that use skm to find the optimal location for building warehouses: [OWL - Optimal Warehouse Locator](https://gyang.shinyapps.io/owl_skm/).
 
 zipcode example
 ---------------
