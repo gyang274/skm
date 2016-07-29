@@ -2,10 +2,7 @@
 % Please edit documentation in R/skm.r
 \name{skm_mls}
 \alias{skm_mls}
-\title{skm_mls: selective k-means solver - wrapper over skm_mls_cpp
-a selective kmeans solve the following problem w. parallel processing:
-assume a data.table of s - t - d(s, t) for all combinations of s and t,
-choose k of s that minimizes sum(min(d(s, t))) with k such s and all t.}
+\title{skm_mls: selective k-means solver - wrapper over skm_mls_cpp}
 \usage{
 skm_mls(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d",
   w_colname = NULL, s_ggrp = integer(0L), s_must = integer(0L),
@@ -56,9 +53,8 @@ s - s<source> - based on s_colname
 d - weighed averge value of d_colname weighed by w_column when s are selected.
 }
 \description{
-skm_mls: selective k-means solver - wrapper over skm_mls_cpp
 a selective kmeans solve the following problem w. parallel processing:
-assume a data.table of s - t - d(s, t) for all combinations of s and t,
-choose k of s that minimizes sum(min(d(s, t))) with k such s and all t.
+ assume a data.table of s - t - d(s, t) for all combinations of s and t,
+ choose k of s that minimizes sum(min(d(s, t))) with k such s and all t.
 }
 

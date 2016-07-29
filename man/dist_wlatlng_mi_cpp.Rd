@@ -2,11 +2,11 @@
 % Please edit documentation in R/RcppExports.R
 \name{dist_wlatlng_mi_cpp}
 \alias{dist_wlatlng_mi_cpp}
-\title{dist_wlatlng_mi_cpp: dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile}
+\title{dist_wlatlng_mi_cpp}
 \usage{
 dist_wlatlng_mi_cpp(lat1, lng1, lat2, lng2)
 }
 \description{
-dist_wlatlng_mi_cpp: dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile
+dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile
 }
 

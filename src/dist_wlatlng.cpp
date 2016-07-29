@@ -12,7 +12,9 @@ using namespace Rcpp;
 // using namespace RcppParallel;
 
 
-//' dist_wlatlng_mi_cpp: dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile
+//' dist_wlatlng_mi_cpp
+//' @description
+//'  dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile
 // [[Rcpp::export]]
 double dist_wlatlng_mi_cpp(double lat1, double lng1, double lat2, double lng2) {
 
@@ -23,7 +25,9 @@ double dist_wlatlng_mi_cpp(double lat1, double lng1, double lat2, double lng2) {
 
 }
 
-//' dist_wlatlng_mi_cpp: dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in kilometer
+//' dist_wlatlng_mi_cpp
+//' @description
+//'  dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in kilometer
 // [[Rcpp::export]]
 double dist_wlatlng_km_cpp(double lat1, double lng1, double lat2, double lng2) {
 

@@ -28,9 +28,10 @@
 #                        const arma::uword max_it, const arma::uword max_at)
 
 #' skm_mls: selective k-means solver - wrapper over skm_mls_cpp
-#' a selective kmeans solve the following problem w. parallel processing:
-#' assume a data.table of s - t - d(s, t) for all combinations of s and t,
-#' choose k of s that minimizes sum(min(d(s, t))) with k such s and all t.
+#' @description
+#'  a selective kmeans solve the following problem w. parallel processing:
+#'  assume a data.table of s - t - d(s, t) for all combinations of s and t,
+#'  choose k of s that minimizes sum(min(d(s, t))) with k such s and all t.
 #' @param x: data.table with s - t - d(s, t): s<source> - t<target> - d<dist>,
 #' where s<source> and t<target> must characters and d<distance> must numeric.
 #' aware d<distance> is not necessary as an euclidean or any distance and even
@@ -250,7 +251,9 @@ skm_mls <- function(x, k = 1L, s_colname = "s", t_colname = "t", d_colname = "d"
 #------------------------------------------------------------------------------#
 #------------------------------------ math ------------------------------------#
 #------------------------------------------------------------------------------#
-#' dist_wlatlng: dist btwn coordinate1<lat1, lng1> and coordinate2<lat2, lng2>
+#' dist_wlatlng
+#' @description
+#'  dist btwn coordinate1<lat1, lng1> and coordinate2<lat2, lng2>
 #' @param .measure - mi or km
 dist_wlatlng <- function(.lat1, .lng1, .lat2, .lng2, .measure = "mi") {
 

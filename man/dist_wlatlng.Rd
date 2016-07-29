@@ -2,7 +2,7 @@
 % Please edit documentation in R/skm.r
 \name{dist_wlatlng}
 \alias{dist_wlatlng}
-\title{dist_wlatlng: dist btwn coordinate1<lat1, lng1> and coordinate2<lat2, lng2>}
+\title{dist_wlatlng}
 \usage{
 dist_wlatlng(.lat1, .lng1, .lat2, .lng2, .measure = "mi")
 }
@@ -10,6 +10,6 @@ dist_wlatlng(.lat1, .lng1, .lat2, .lng2, .measure = "mi")
 \item{.measure}{- mi or km}
 }
 \description{
-dist_wlatlng: dist btwn coordinate1<lat1, lng1> and coordinate2<lat2, lng2>
+dist btwn coordinate1<lat1, lng1> and coordinate2<lat2, lng2>
 }
 

@@ -2,8 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{stratified_sampling}
 \alias{stratified_sampling}
-\title{stratified_sampling: from v select k w.r.t stratify structure g.
-TODO: implementing via template so v is flexible as vec or uvec.}
+\title{stratified_sampling}
 \usage{
 stratified_sampling(v, k, g)
 }
@@ -18,7 +17,7 @@ stratified_sampling(v, k, g)
 s: select from v length k stratified by g.
 }
 \description{
-stratified_sampling: from v select k w.r.t stratify structure g.
-TODO: implementing via template so v is flexible as vec or uvec.
+select k elements from vector v w.r.t stratify structure group g.
+ TODO - implementing via template so v is flexible as vec or uvec.
 }
 

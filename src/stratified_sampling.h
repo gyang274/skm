@@ -12,8 +12,10 @@ using namespace Rcpp;
 // using namespace RcppParallel;
 
 
-//' stratified_sampling: from v select k w.r.t stratify structure g.
-//' TODO: implementing via template so v is flexible as vec or uvec.
+//' stratified_sampling
+//' @description
+//'  select k elements from vector v w.r.t stratify structure group g.
+//'  TODO - implementing via template so v is flexible as vec or uvec.
 //' @param v: candidate v.
 //' @param k: selection k.
 //' @param g: stratify structure g.
