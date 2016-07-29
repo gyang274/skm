@@ -3,7 +3,7 @@
 \docType{data}
 \name{zip2012}
 \alias{zip2012}
-\title{zip2012: a zip code database with latitude, longitude, population and income.}
+\title{zip2012}
 \format{A data table with 28844 rows and 9 variables:
 \describe{
   \item{zip}{zip code, 5 digits zip code in U.S.}
@@ -23,7 +23,7 @@
 zip2012
 }
 \description{
-zip2012: a zip code database with latitude, longitude, population and income.
+a zip code database with latitude, longitude, population and income.
 }
 \keyword{datasets}
 

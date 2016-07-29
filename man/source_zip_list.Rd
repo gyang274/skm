@@ -3,14 +3,14 @@
 \docType{data}
 \name{source_zip_list}
 \alias{source_zip_list}
-\title{source_zip_list: a list of zip code used in skm package demonstration.}
-\format{: a character vector of length 51, one 5 digits zip code selected from
-each state, selected the most central zip code in each state.}
+\title{source_zip_list}
+\format{a character vector of length 51 includes one 5 digits zip code selected from
+ each state, where the most central zip code in each state selected.}
 \usage{
 source_zip_list
 }
 \description{
-source_zip_list: a list of zip code used in skm package demonstration.
+a list of zip code used in skm package demonstration.
 }
 \keyword{datasets}
 
