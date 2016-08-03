@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Guang Yang
 Maintainer: Guang Yang <gyang274@gmail.com>
 Description: Selective K-Means (SKM).
-License: MIT + file LICENSE
+License: file LICENSE
 LazyData: TRUE
 Depends: data.table, magrittr,
     Rcpp (>= 0.12.5), RcppArmadillo, RcppParallel
