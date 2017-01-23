@@ -1,21 +1,7 @@
-#include <algorithm>
-
-#ifndef __DISTWLATLNG__
-#define __DISTWLATLNG__
-
-#include <RcppArmadillo.h>
-#include <RcppParallel.h>
-// [[Rcpp::depends(RcppParallel, RcppArmadillo)]]
-
-using namespace Rcpp;
-// using namespace arma;
-// using namespace RcppParallel;
+#include "dist_wlatlng.h"
 
 
-//' dist_wlatlng_mi_cpp
-//' @description
-//'  dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile
-// [[Rcpp::export]]
+// dist_wlatlng_mi_cpp: dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile
 double dist_wlatlng_mi_cpp(double lat1, double lng1, double lat2, double lng2) {
 
   // earth radium in 3956 mi or 6367 km
@@ -25,10 +11,7 @@ double dist_wlatlng_mi_cpp(double lat1, double lng1, double lat2, double lng2) {
 
 }
 
-//' dist_wlatlng_mi_cpp
-//' @description
-//'  dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in kilometer
-// [[Rcpp::export]]
+// dist_wlatlng_km_cpp: dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in kilometer
 double dist_wlatlng_km_cpp(double lat1, double lng1, double lat2, double lng2) {
 
   // earth radium in 3956 mi or 6367 km
@@ -38,9 +21,9 @@ double dist_wlatlng_km_cpp(double lat1, double lng1, double lat2, double lng2) {
 
 }
 
-
-// [[Rcpp::export]]
-arma::vec distSgl_wlatlng_cpp(arma::vec lat1, arma::vec lng1, arma::vec lat2, arma::vec lng2, std::string measure = "mi") {
+// distSgl_wlatlng_cpp: dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile mi or kilometer km, mile is default
+//  implement as serial computing over vector of lat1, lng1, lat2, lng2
+arma::vec distSgl_wlatlng_cpp(arma::vec lat1, arma::vec lng1, arma::vec lat2, arma::vec lng2, std::string measure) {
 
   arma::vec d(lat1.size());
 
@@ -115,10 +98,11 @@ struct distRpl : public RcppParallel::Worker {
 
 };
 
-// [[Rcpp::export]]
-NumericVector distRpl_wlatlng_cpp(NumericVector lat1, NumericVector lng1,
-                                  NumericVector lat2, NumericVector lng2,
-                                  std::string measure = "mi", int distRpl_GS = 100) {
+// distRpl_wlatlng_cpp: dist between coordinate1<lat1, lng1> and coordinate2<lat2, lng2> in mile mi or kilometer km, mile is default
+//  implement as parallel computing over vector of lat1, lng1, lat2, lng2 via RcppParallel
+NumericVector distRpl_wlatlng_cpp(
+  NumericVector lat1, NumericVector lng1, NumericVector lat2, NumericVector lng2, std::string measure, int distRpl_GS
+) {
 
 
   // allocate memory space for output vector d
@@ -134,5 +118,3 @@ NumericVector distRpl_wlatlng_cpp(NumericVector lat1, NumericVector lng1,
 
 }
 
-
-#endif // __DISTWLATLNG__

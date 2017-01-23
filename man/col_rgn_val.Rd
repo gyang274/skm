@@ -2,11 +2,25 @@
 % Please edit documentation in R/RcppExports.R
 \name{col_rgn_val}
 \alias{col_rgn_val}
-\title{col_rgn_val: colvec range = max - min value within limited range}
+\title{col_rgn_val}
 \usage{
 col_rgn_val(u, wlmt)
 }
+\arguments{
+\item{u}{u: a numeric colvec}
+
+\item{wlmt}{wlmt: limit search on colvec on indices within wlmt}
+}
+\value{
+vd
+ max - min value in u within wlmt w.r.t to original index
+}
 \description{
-col_rgn_val: colvec range = max - min value within limited range
+calculate colvec range = max - min value within limited range
+}
+\seealso{
+Other matrix_minmax: \code{\link{col_max_idx}},
+  \code{\link{col_max_val}}, \code{\link{col_min_idx}},
+  \code{\link{col_min_val}}
 }
 

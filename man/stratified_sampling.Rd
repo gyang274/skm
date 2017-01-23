@@ -7,17 +7,24 @@
 stratified_sampling(v, k, g)
 }
 \arguments{
-\item{v:}{candidate v.}
+\item{v}{<vector>
+v: a numeric candidate v from which draw sample.}
 
-\item{k:}{selection k.}
+\item{k}{<integer>
+k: selection sample size.}
 
-\item{g:}{stratify structure g.}
+\item{g}{<vector>
+g: stratify structure g - info on grouping of v so that the selected sample is stratified across groups.}
 }
 \value{
-s: select from v length k stratified by g.
+s <vector>
+ s: a vector select from v length k stratified by g.
 }
 \description{
 select k elements from vector v w.r.t stratify structure group g.
  TODO - implementing via template so v is flexible as vec or uvec.
+}
+\note{
+v is required as an integer vector for using in skm
 }
 

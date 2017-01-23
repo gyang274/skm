@@ -1,0 +1,12 @@
+<!-- TODO.md is generated from TODO.Rmd. Please edit that file -->
+skm: Selective k-Means
+======================
+
+TODO
+----
+
+-   `skm_mls`: Add capability to handle fixed cost for each s - add an argument to take a fixed cost for each s, construct a diagnol matrix and append right to s-t matrix, and then `skm_mls_cpp`.
+
+-   install ccache to speed up complie of package: <https://ccache.samba.org/>
+
+-   learn source code ~/R/R-3.3.0/library/RcppArmadillo/include/RcppArmadilloExtensions/sample.h

@@ -6,7 +6,10 @@
 ^NEWS\.md$
 ^NEWS\.Rmd$
 ^NEWS-.*\.png$
+^TODO\.md$
+^TODO\.Rmd$
+^TODO-.*\.png$
 app/
-doc/
 mat/
 wfx/
+zfx/

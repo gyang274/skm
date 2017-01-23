@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 /app/
-/doc/
 /mat/
 /wfx/
+/zfx/
+inst/doc

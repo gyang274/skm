@@ -1,88 +1,83 @@
-#ifndef __MATRIXMINMAX__
-#define __MATRIXMINMAX__
+#ifndef __MATRIX_MINMAX__
+#define __MATRIX_MINMAX__
 
 
 #include <RcppArmadillo.h>
-#include <RcppArmadilloExtensions/sample.h>
-#include <RcppParallel.h>
-// [[Rcpp::depends(RcppParallel, RcppArmadillo)]]
+// [[Rcpp::depends(RcppArmadillo)]]
 
 using namespace Rcpp;
 // using namespace arma;
-// using namespace RcppParallel;
 
 
-//' col_min_idx: colvec min value index within limited range
-//' @param wlmt: a limit search on colvec on indices within wlmt
-//' @return return an index of min value w.r.t to original index
-//' @note cpp use index start from 0 vs r use index start from 1
-//' @note in case of equal std:min/std:max take first index seen
+//' col_min_idx
+//' @description
+//'  calculate colvec min value index within limited range
+//' @param u
+//'  u: a numeric colvec
+//' @param wlmt
+//'  wlmt: limit search on colvec on indices within wlmt
+//' @return id
+//'  an index of min value in u within wlmt w.r.t to original index
+//' @note
+//'   cpp use index start from 0 vs r use index start from 1
+//' @note
+//'   in case of equal std:min/std:max take first index seen
+//' @family matrix_minmax
+//' @export
 // [[Rcpp::export]]
-arma::uword col_min_idx(const arma::colvec& u, const arma::ucolvec& wlmt) {
+arma::uword col_min_idx(const arma::colvec& u, const arma::ucolvec& wlmt);
 
-  arma::uword min_val_idx;
 
-  // wlmt.size() == 0 ? u.min(min_val_idx) : ( u(wlmt).min(min_val_idx); min_val_idx = wlmt(min_val_idx); );
-
-  if ( wlmt.size() == 0 ) {
-
-    u.min(min_val_idx);
-
-  } else {
-
-    u(wlmt).min(min_val_idx); min_val_idx = wlmt(min_val_idx);
-
-  }
-
-  return min_val_idx;
-}
-
-//' col_max_idx: colvec max value index within limited range
-//' @param wlmt: a limit search on colvec on indices within wlmt
-//' @return return an index of max value w.r.t to original index
-//' @note cpp use index start from 0 vs r use index start from 1
-//' @note in case of equal std:min/std:max take first index seen
+//' col_max_idx
+//' @description
+//'  calculate colvec max value index within limited range
+//' @inheritParams col_min_idx
+//' @return id
+//'  an index of max value in u within wlmt w.r.t to original index
+//' @note
+//'  cpp use index start from 0 vs r use index start from 1
+//' @note
+//'  in case of equal std:min/std:max take first index seen
+//' @family matrix_minmax
+//' @export
 // [[Rcpp::export]]
-arma::uword col_max_idx(const arma::colvec& u, const arma::ucolvec& wlmt) {
+arma::uword col_max_idx(const arma::colvec& u, const arma::ucolvec& wlmt);
 
-  arma::uword max_val_idx;
 
-  // wlmt.size() == 0 ? u.max(max_val_idx);: ( u(wlmt).max(max_val_idx); max_val_idx = wlmt(max_val_idx); );
-
-  if ( wlmt.size() == 0 ) {
-
-    u.max(max_val_idx);
-
-  } else {
-
-    u(wlmt).max(max_val_idx); max_val_idx = wlmt(max_val_idx);
-
-  }
-
-  return max_val_idx;
-}
-
-//' col_min_val: colvec min value within limited range
+//' col_min_val
+//' @description
+//'  calculate colvec min value within limited range
+//' @inheritParams col_min_idx
+//' @return vd
+//'  min value in u within wlmt w.r.t to original index
+//' @family matrix_minmax
+//' @export
 // [[Rcpp::export]]
-double col_min_val(const arma::colvec& u, const arma::ucolvec& wlmt) {
+double col_min_val(const arma::colvec& u, const arma::ucolvec& wlmt);
 
-  return wlmt.size() > 0 ? u(wlmt).min() : u.min() ;
 
-}
-
-//' col_max_val: colvec max value within limited range
+//' col_max_val
+//' @description
+//'  calculate colvec max value within limited range
+//' @inheritParams col_min_idx
+//' @return vd
+//'  min value in u within wlmt w.r.t to original index
+//' @family matrix_minmax
+//' @export
 // [[Rcpp::export]]
-double col_max_val(const arma::colvec& u, const arma::ucolvec& wlmt) {
+double col_max_val(const arma::colvec& u, const arma::ucolvec& wlmt);
 
-  return wlmt.size() > 0 ? u(wlmt).max() : u.max() ;
-}
 
-//' col_rgn_val: colvec range = max - min value within limited range
+//' col_rgn_val
+//' @description
+//'  calculate colvec range = max - min value within limited range
+//' @inheritParams col_min_idx
+//' @return vd
+//'  max - min value in u within wlmt w.r.t to original index
+//' @family matrix_minmax
+//' @export
 // [[Rcpp::export]]
-double col_rgn_val(const arma::colvec& u, const arma::ucolvec& wlmt) {
-
-  return wlmt.size() > 0 ? u(wlmt).max() - u(wlmt).min() : u.max() - u.min() ;
-}
+double col_rgn_val(const arma::colvec& u, const arma::ucolvec& wlmt);
 
 
-#endif // __MATRIXMINMAX__
+#endif // __MATRIX_MINMAX__
