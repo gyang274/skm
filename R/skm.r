@@ -383,10 +383,116 @@ loadModule("skm_module", TRUE)
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
-#------------------------------- sets r-options -------------------------------#
+#-------------------------- Matthew Mu (2018.08.09) ---------------------------#
 #------------------------------------------------------------------------------#
-# protect from using all thread when run skmRpl parallel
-# setThreadOptions(numThreads = defaultNumThreads() / 2)
-#------------------------------------------------------------------------------#
+#' skm_greedy
+#' @description
+#'  a faster version of skm::skm_gdp_cpp (with >5X speed up)
+#' @export
+#'
+skm_greedy <- function(x, k){
 
-#
+  xx <- copy(x)
+
+  rslt <- c()
+
+  for (i in 1:k){
+
+    message("skm_gdp_cpp: optimize at it <", i, "> ...")
+
+    l =  ncol(xx)
+
+    top_l_sum <- apply(xx, 1, .sum_l_smallest, l=l)
+
+    idx <- as.integer(which.min(top_l_sum))
+
+    rslt[i] <- idx-1
+
+    xx <- .update_min_row(xx, idx)
+
+
+  }
+
+  return(matrix(unique(rslt)))
+
+}
+
+#' cwsc
+#' @description
+#'  a greedy algorithm different from skm::skm_gdp_cpp
+#' @export
+#'
+cwsc <- function(x, k){
+
+  xx <- copy(x)
+
+  yy <- copy(x)*0
+
+  rslt <- c()
+
+  for (i in 1:k){
+
+    message("cwsc: optimize at it <", i, "> ...")
+
+    kk <- k+1-i
+
+    l = round(ncol(xx)/kk)
+
+    top_l_sum <- apply(xx, 1, .sum_l_smallest, l=l) + apply(yy, 1, sum)
+
+    idx <- as.integer(which.min(top_l_sum))
+
+    rslt[i] <- idx-1
+
+    xx <- .update_min_row(xx, idx)
+
+    yy[, .idx_l_smallest(xx[idx, ], l)] <- xx[, .idx_l_smallest(xx[idx, ], l)]
+
+    xx <- xx[,-.idx_l_smallest(xx[idx, ], l)]
+
+
+  }
+
+  return(matrix(unique(rslt)))
+
+}
+
+
+#' .sum_l_smallest
+#' @description
+#'  sum of l smallest values in vector v
+#'
+.sum_l_smallest <- function(v, l){
+
+  return(sum(sort(v)[1:l]))
+
+}
+
+#' .idx_l_smallest
+#' @description
+#'  indices of l smallest entry in vector v
+#'
+.idx_l_smallest <- function(v, l){
+
+  return(order(v)[1:l])
+
+}
+
+#' .update_min_row
+#' @description
+#'  update each row of x as pairwise min with x[, idx]
+#'
+.update_min_row <- function(x, idx){
+
+  y <- t(apply(x, 1, pmin, x[idx,]))
+
+  dimnames(y) <- list(
+    rownames(x), colnames(x)
+  )
+
+  return(y)
+
+}
+
+
+
